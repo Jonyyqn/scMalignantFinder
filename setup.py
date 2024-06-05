@@ -13,7 +13,7 @@ setup(
     description='A tool for identitying malignant cells from single-cell RNA-seq data',
     long_description=long_description,
     author='Journey Yu',
-    author_email='jonyyqn@mail.ustc.edu.cn'
+    author_email='jonyyqn@mail.ustc.edu.cn',
     long_description_content_type="text/markdown",
     url="https://github.com/jonyyqn/scMalignantFinder",
     packages=find_packages(),
