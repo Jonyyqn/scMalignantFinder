@@ -19,8 +19,8 @@ setup(
     packages=find_packages(),
     python_requires='>=3.8',
     install_requires=[
-        'numpy>=1.23.4',
-        'pandas>=2.1.4',
+        'numpy==1.23.4',
+        'pandas==2.1.4',
         'scanpy==1.9.3',
         'scikit-learn==1.2.2',
         'matplotlib==3.6.3'
