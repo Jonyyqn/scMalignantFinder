@@ -19,10 +19,15 @@ setup(
     packages=find_packages(),
     python_requires='>=3.8',
     install_requires=[
+        'scanpy==1.9.3',
+        'anndata==0.9.1',
+        'scikit-learn==1.2.2',
         'numpy==1.23.4',
         'pandas==2.1.4',
-        'scanpy==1.9.3',
-        'scikit-learn==1.2.2',
-        'matplotlib==3.6.3'
+        'matplotlib==3.6.3',
+        'scipy==1.13.1',
+        'numba==0.56.4',
+        'h5py==3.7.0'
+        
     ],
 )
