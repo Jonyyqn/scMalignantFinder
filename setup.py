@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 d = {}
-with open("SPACEL/_version.py") as f:
+with open("scMalignantFinder/_version.py") as f:
     exec(f.read(), d)
     
 setup(
