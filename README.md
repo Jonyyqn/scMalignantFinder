@@ -27,9 +27,15 @@ pip install scMalignantFinder
 pip install git+https://github.com/Jonyyqn/scMalignantFinder.git
 ```
 
-Optional: scMalignantFinder software has a built-in pan-cancer cell type annotation tool scATOMIC. If you want to complete basic annotation of cell types first and then find malignant cells, please follow the official tutorial of scATOMIC (https://github.com/abelson-lab/scATOMIC) to complete its installation in the same conda environment.
+Optional: scMalignantFinder software has a built-in pan-cancer cell type annotation tool scATOMIC. If you want to complete basic annotation of cell types first and then find malignant cells, please follow the official tutorial of [scATOMIC](https://github.com/abelson-lab/scATOMIC) to complete its installation in the same conda environment.
 
-# Example
+# Data preparation
+
+1. Training data: You can download the training data used in the original study from [here](http://home.ustc.edu.cn/~jonyyqn/scMalignantFinder_data/combine_training.h5ad), or use your own dataset to training the model.
+2. Feature file: The file contain feature list can be collected from [here](http://home.ustc.edu.cn/~jonyyqn/scMalignantFinder_data/combined_tumor_up_down_degs.txt)
+3. Example test data: The cancer cell line data containing malignant cells can be collected from [here](http://home.ustc.edu.cn/~jonyyqn/scMalignantFinder_data/test_cancerCellLine.h5ad); The healthy tissue data containing normal epithelial cells can be collected from [here](http://home.ustc.edu.cn/~jonyyqn/scMalignantFinder_data/test_TabulaSapiens.h5ad)
+
+# User guidance
 
 ```python
 ### load package
@@ -40,8 +46,6 @@ model = classifier.scMalignantFinder(train_h5ad_path='combine_training.h5ad',
                                      feature_path='combined_tumor_up_down_degs.txt',
                                      test_h5ad_path='/path/to/test_data.h5ad', 
                                      celltype_annotation=False)
-# downlaod the training data from http://home.ustc.edu.cn/~jonyyqn/scMalignantFinder_data/combine_training.h5ad
-# download the feature file from http://home.ustc.edu.cn/~jonyyqn/scMalignantFinder_data/combined_tumor_up_down_degs.txt
 # celltype_annotation: If False, the cell type annotation process will not be performed. If True, use scAtomic for cell type annotation
 
 # model prediction
