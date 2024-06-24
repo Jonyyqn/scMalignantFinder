@@ -23,7 +23,7 @@ setup(
         'anndata==0.9.1',
         'scikit-learn==1.2.2',
         'numpy==1.23.4',
-        'joblib==1.1.1'
+        'joblib==1.1.1',
         'pandas==2.1.4',
         'matplotlib==3.6.3',
         'scipy==1.13.1',
