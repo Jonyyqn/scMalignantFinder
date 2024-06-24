@@ -1,12 +1,17 @@
 import os
 import sys
+import joblib
 import subprocess
 import numpy as np
 import pandas as pd
 import scanpy as sc
+from scipy.sparse import csr_matrix
 from sklearn.linear_model import LogisticRegression, Lasso
 from sklearn.ensemble import RandomForestClassifier
-
+import warnings
+from sklearn.exceptions import ConvergenceWarning
+# Ignore only ConvergenceWarning
+warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
 def init_core_model(model_method, n_thread):
     """Method to set the underlying core model.
@@ -110,6 +115,7 @@ class scMalignantFinder:
     def __init__(
         self,
         test_h5ad_path,
+        pretrain_path=None
         train_h5ad_path="./combine_training.h5ad",
         celltype_annotation=False,
         output_annotation="scMalignantFinder_prediction",
@@ -121,36 +127,48 @@ class scMalignantFinder:
         out_path=None
     ):
         self.test_h5ad_path = test_h5ad_path
+        self.pretrain_path = pretrain_path
         self.train_h5ad_path = train_h5ad_path
         self.celltype_annotation = celltype_annotation
         self.output_annotation = output_annotation
         self.model_method = model_method
         self.feature_path = feature_path
         self.norm_type = norm_type
-        self.fitted = False
         self.n_thread = 1
+        self.fitted = False
         self.probability = probability
         self.out_path = out_path
-        self.core_model = init_core_model(self.model_method, self.n_thread)
         
     
     def fit(self):
         label_col = 'Raw_annotation'
         label_dict = {'Normal':0,'Tumor':1}
         r_label_dict = dict(zip(label_dict.values(), label_dict.keys()))
-        
-        train_adata = data_preprocess(self.train_h5ad_path)
-        features = load_feature(self.feature_path)
-        filter_features = list(set(features) & set(sc.read_h5ad(self.test_h5ad_path).var_names))
-        
-        if len(filter_features)>0:
-            _ = self.core_model.fit(train_adata[:,filter_features].X, train_adata.obs[label_col].map(label_dict).tolist())
-            self.fitted = True
+
+        if pretrain_path == None:
+            train_adata = data_preprocess(self.train_h5ad_path)
+            features = load_feature(self.feature_path)
+            filter_features = list(set(features) & set(sc.read_h5ad(self.test_h5ad_path).var_names))
+            self.core_model = init_core_model(self.model_method, self.n_thread)
+            if len(filter_features)>0:
+                _ = self.core_model.fit(train_adata[:,filter_features].X, train_adata.obs[label_col].map(label_dict).tolist())
+                self.fitted = True
+            else:
+                print('The number of features is 0. Please check whether the features of the test set are gene symbols.')
+                self.fitted = False
         else:
-            print('The number of features is 0. Please check whether the features of the test set are gene symbols.')
-            self.fitted = False
-        
+            self.core_model = joblib.load(os.path.join(pretrain_path,'model.joblib'))
+            features = list(np.loadtxt(os.path.join(pretrain_path,'ordered_feature.tsv')))
+            filter_features = list(set(features) & set(sc.read_h5ad(self.test_h5ad_path).var_names))
+            if len(filter_features)>0:
+                self.fitted = True
+            else:
+                print('The number of features is 0. Please check whether the features of the test set are gene symbols.')
+                self.fitted = False
+
         return filter_features
+
+            
 
     def predict(self, features):
         label_dict = {'Normal':0,'Tumor':1}
@@ -160,7 +178,20 @@ class scMalignantFinder:
             raise RuntimeError("Model not yet fitted. Please run Model.fit(...) first!")
         
         test_adata = data_preprocess(self.test_h5ad_path, norm=self.norm_type)
-        y_pred = self.core_model.predict(test_adata[:,features].X)
+        if pretrain_path == None:
+            y_pred = self.core_model.predict(test_adata[:,features].X)
+        else:
+            df = test_adata[:,features].to_df()
+            sub_matrix = pd.DataFrame(index=df.index, columns=features)
+            for feature in features:
+                if feature in df.columns:
+                    sub_matrix[feature] = df[feature]
+                else:
+                    sub_matrix[feature] = 0
+            y_pred = self.core_model.predict(csr_matrix(sub_matrix))
+            del df
+            del sub_matrix
+
         pred_df = pd.DataFrame({self.output_annotation: y_pred}, index=test_adata.obs_names)
         pred_df = pred_df.applymap(lambda x: r_label_dict[x])
         
