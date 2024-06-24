@@ -24,7 +24,7 @@ pip install scMalignantFinder
  Or, install `scMalignantFinder` from Github:
 
 ``` shell
-pip install git+https://github.com/Jonyyqn/scMalignantFinder.git
+pip install https://github.com/Jonyyqn/scMalignantFinder.git
 ```
 
 Optional: scMalignantFinder includes a built-in pan-cancer cell type annotation tool, scATOMIC. If you want to perform basic cell type annotation before identifying malignant cells, follow the [scATOMIC official tutorial](https://github.com/abelson-lab/scATOMIC) to complete its installation in the same conda environment.
