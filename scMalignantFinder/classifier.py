@@ -83,6 +83,9 @@ class scMalignantFinder:
     -----------
     test_h5ad_path : str
         Path of the test data.
+    pretrain_path: str
+        Path of the pretrained model.
+        Default: None
     train_h5ad_path : str
         Path of the training data.
         Default: /mnt/home/qnyu/workspace/scOmics/malignantModel/multi_tissue/data/combine_training.h5ad.
@@ -115,7 +118,7 @@ class scMalignantFinder:
     def __init__(
         self,
         test_h5ad_path,
-        pretrain_path=None
+        pretrain_path=None,
         train_h5ad_path="./combine_training.h5ad",
         celltype_annotation=False,
         output_annotation="scMalignantFinder_prediction",
@@ -145,7 +148,7 @@ class scMalignantFinder:
         label_dict = {'Normal':0,'Tumor':1}
         r_label_dict = dict(zip(label_dict.values(), label_dict.keys()))
 
-        if pretrain_path == None:
+        if self.pretrain_path == None:
             train_adata = data_preprocess(self.train_h5ad_path)
             features = load_feature(self.feature_path)
             filter_features = list(set(features) & set(sc.read_h5ad(self.test_h5ad_path).var_names))
@@ -156,9 +159,12 @@ class scMalignantFinder:
             else:
                 print('The number of features is 0. Please check whether the features of the test set are gene symbols.')
                 self.fitted = False
+
+            return filter_features
+        
         else:
-            self.core_model = joblib.load(os.path.join(pretrain_path,'model.joblib'))
-            features = list(np.loadtxt(os.path.join(pretrain_path,'ordered_feature.tsv')))
+            self.core_model = joblib.load(os.path.join(self.pretrain_path,'model.joblib'))
+            features = load_feature(os.path.join(self.pretrain_path,'ordered_feature.tsv'))
             filter_features = list(set(features) & set(sc.read_h5ad(self.test_h5ad_path).var_names))
             if len(filter_features)>0:
                 self.fitted = True
@@ -166,8 +172,7 @@ class scMalignantFinder:
                 print('The number of features is 0. Please check whether the features of the test set are gene symbols.')
                 self.fitted = False
 
-        return filter_features
-
+            return features
             
 
     def predict(self, features):
@@ -178,10 +183,10 @@ class scMalignantFinder:
             raise RuntimeError("Model not yet fitted. Please run Model.fit(...) first!")
         
         test_adata = data_preprocess(self.test_h5ad_path, norm=self.norm_type)
-        if pretrain_path == None:
+        if self.pretrain_path == None:
             y_pred = self.core_model.predict(test_adata[:,features].X)
         else:
-            df = test_adata[:,features].to_df()
+            df = test_adata[:,list(set(features) & set(test_adata.var_names))].to_df()
             sub_matrix = pd.DataFrame(index=df.index, columns=features)
             for feature in features:
                 if feature in df.columns:
