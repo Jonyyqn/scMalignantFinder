@@ -22,7 +22,7 @@ def init_core_model(model_method, n_thread):
 
     if model_method == "LogisticRegression":
         return LogisticRegression(n_jobs=n_thread)
-    elif smodel_method == "RandomForest":
+    elif model_method == "RandomForest":
         return RandomForestClassifier(n_jobs=n_thread)
     elif model_method == "XGBoost":
         from xgboost.sklearn import XGBClassifier
