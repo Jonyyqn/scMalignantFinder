@@ -41,7 +41,7 @@ from scMalignantFinder import classifier
 
 # Initialize model
 model = classifier.scMalignantFinder(
-    pretrain_path=None # Set the pretrain directory if you want to use the pretrained model.
+    pretrain_path=None, # Set the pretrain directory if you want to use the pretrained model.
     train_h5ad_path='/path/to/training_data.h5ad',
     feature_path='/path/to/feature_list',
     test_h5ad_path='/path/to/test_data.h5ad', 
