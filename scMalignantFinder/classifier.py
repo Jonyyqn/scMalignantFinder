@@ -108,7 +108,7 @@ class scMalignantFinder:
         Number of multiprocessing threads.
         Default: 1
     probability: bool
-        If True, Output the prediction probabilit for each class.
+        If True, Output the prediction probability for each class.
         Default: False
     out_path: str
         Path storing the prediction probability result.
@@ -126,7 +126,7 @@ class scMalignantFinder:
         feature_path="./combined_tumor_up_down_degs.txt",
         norm_type=True,
         n_thread=1,
-        probability=True,
+        probability=False,
         out_path=None
     ):
         self.test_h5ad_path = test_h5ad_path
