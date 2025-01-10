@@ -4,6 +4,12 @@
 
 ![workflow](docs/workflow.png)
 
+# Latest updates
+
+## Version 1.0.0 2024-12-24
+
+- Provided output of malignancy probability
+
 # Installation
 
 We recommend using a conda environment to install scMalignantFinder.
