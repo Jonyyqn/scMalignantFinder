@@ -126,7 +126,7 @@ class scMalignantFinder:
         feature_path="./combined_tumor_up_down_degs.txt",
         norm_type=True,
         n_thread=1,
-        probability=False,
+        probability=True,
         out_path=None
     ):
         self.test_h5ad_path = test_h5ad_path
