@@ -52,7 +52,7 @@ model = classifier.scMalignantFinder(
     feature_path='/path/to/feature_list',
     test_h5ad_path='/path/to/test_data.h5ad', 
     probability=True, # If True, output the prediction probability for each class.
-  	out_path='/path/to/probability' # Path storing the prediction probability result
+    out_path='/path/to/probability' # Path storing the prediction probability result
 )
 # celltype_annotation: If False, the cell type annotation process will not be performed. If True, use scAtomic for cell type annotation.
 
