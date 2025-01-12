@@ -64,10 +64,9 @@ model = classifier.scMalignantFinder(
     pretrain_path=None, # Path to pretrained model
     train_h5ad_path="/path/to/train_data.h5ad",# Path to training data
     feature_path="/path/to/features.txt",     # Path to feature list
-    model_method="RandomForest",              # ML method: LogisticRegression, RandomForest, XGBoost
+    model_method="LogisticRegression",              # ML method: LogisticRegression, RandomForest, XGBoost
     norm_type=True,                           # Normalize test data (default: True)
-    n_thread=1,                               # Number of threads for parallel processing
-    use_raw=False                             # Use .raw attribute of AnnData if available
+    n_thread=1                               # Number of threads for parallel processing
 )
 
 # Load data
@@ -97,7 +96,7 @@ KUL01-T_AAACGGGTCGGTTAAC     0.78968
 KUL01-T_AAAGATGGTATAGGGC      0.243564
 KUL01-T_AAAGATGGTGGCCCTA     0.8796
 KUL01-T_AAAGCAAGTAAACACA     0.6598
-Name: malignancy_probability
+Name: malignancy_probability, dtype: float64
 ```
 
 
