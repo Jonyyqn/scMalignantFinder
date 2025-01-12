@@ -1,4 +1,5 @@
 import os
+import sys
 import numpy as np
 import pandas as pd
 import scanpy as sc
@@ -47,6 +48,9 @@ def load_feature(feature_path):
     return list(np.loadtxt(feature_path, dtype=str))
 
 
+
+
+
 class scMalignantFinder:
     """
     Main class for scMalignantFinder.
@@ -61,6 +65,10 @@ class scMalignantFinder:
     - norm_type (bool): Whether to normalize the test data. Default: True.
     - n_thread (int): Number of threads for parallel processing. Default: 1.
     - use_raw (bool): Use `.raw` attribute of AnnData if available. Default: False.
+    - celltype_annotation (bool): use scAtomic for cell type annotation. Default: False.
+    - r_script_path (str): Path to the scAtomic r script. Default: None.
+    - r_env_path (str): Path to the desired R environment. Default is 'Rscript', which uses the system's default R.
+
     """
 
     def __init__(
@@ -73,6 +81,10 @@ class scMalignantFinder:
         norm_type=True,
         n_thread=1,
         use_raw=False,
+        celltype_annotation=False,
+        r_script_path=None,
+        r_env_path='Rscript',
+
     ):
         self.test_input = test_input
         self.pretrain_path = pretrain_path
@@ -89,6 +101,9 @@ class scMalignantFinder:
         self.core_model = None
         self.fitted = False  # Indicates whether the model is ready for prediction
         self.pretrain_load = False
+        self.celltype_annotation = celltype_annotation
+        self.r_script_path = r_script_path
+        self.r_env_path = r_env_path
         self.missing_feature = []
 
     def load(self):
@@ -219,4 +234,45 @@ class scMalignantFinder:
         )
         self.test_adata.obs["malignancy_probability"] = y_prob
 
+        # Perform cell type annotation
+        if self.celltype_annotation:
+            tmpdir = os.getcwd()
+            r_script = os.path.join(self.r_script_path, 'scAtomic.r')
+            python_path = sys.executable
+            
+            if isinstance(self.test_input, str):
+                adata = sc.read_h5ad(self.test_input)
+            elif isinstance(self.test_input, sc.AnnData):
+                adata = self.test_input
+            if self.use_raw:
+                if adata.raw is not None:
+                    adata.X = adata.raw.X.copy()
+            tmp_adata_path = os.path.join(tmpdir,'input.h5ad')
+            adata.write(tmp_adata_path)
+
+            import subprocess
+            result = subprocess.run(
+                [self.r_env_path, r_script, tmp_adata_path, str(self.n_thread), tmpdir, python_path],
+                capture_output=True,
+                text=True
+            )
+
+            if result.returncode != 0:
+                raise RuntimeError(f'Error running R script: {result.stderr}')
+
+
+            annot_df = pd.read_csv(f'{tmpdir}/celltype_annotation.scAtomic.csv', index_col=0)
+            self.test_adata.obs['scATOMIC_pred'] = annot_df.loc[self.test_adata.obs_names,'scATOMIC_pred']
+            os.system('rm {0} {1}'.format(tmp_adata_path, f'{tmpdir}/celltype_annotation.scAtomic.csv'))
+
+            # potential_prefix = 'Cancer|Normal|Soft Tissue|Brain|Neuroblastoma|Oligodendrocytes|Bile Duct|\
+            #                     Bladder|Bone|Brain|Breast|Colon|Colorectal|Endometrial|Uterine|Esophageal|\
+            #                     Gallbladder|Gastric|Glial|Kidney|Liver|Lung|Oligodendrocytes|Ovarian|\
+            #                     Pancreatic|Prostate|Skin|Sarcoma|Melanoma|Hepatobiliary'
+
+            # potential_cells = annot_df[annot_df['scATOMIC_pred'].str.contains(potential_prefix)].index.tolist()
+
+
         return self.test_adata
+
+
