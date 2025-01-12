@@ -1,25 +1,20 @@
 import os
-import sys
-import joblib
-import subprocess
 import numpy as np
 import pandas as pd
 import scanpy as sc
-from scipy.sparse import csr_matrix
-from sklearn.linear_model import LogisticRegression, Lasso
+from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-import warnings
 from sklearn.exceptions import ConvergenceWarning
-# Ignore only ConvergenceWarning
+import warnings
+
+# Suppress convergence warnings
 warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
+
 def init_core_model(model_method, n_thread):
-    """Method to set the underlying core model.
-
-    The core model is used to make first predictions 
-    based on ranked scores.
     """
-
+    Initialize the core classification model.
+    """
     if model_method == "LogisticRegression":
         return LogisticRegression(n_jobs=n_thread)
     elif model_method == "RandomForest":
@@ -28,196 +23,200 @@ def init_core_model(model_method, n_thread):
         from xgboost.sklearn import XGBClassifier
         return XGBClassifier(n_jobs=n_thread)
     else:
-        raise NotImplementedError(
-            f"core model '{model_method}' is not yet implemented. "
-            f"Please try 'LogisticRegression, RandomForest, or XGBoost' instead."
-        )
+        raise NotImplementedError(f"Model '{model_method}' is not supported.")
 
-def data_preprocess(h5ad_path, norm=True):
-    adata = sc.read_h5ad(h5ad_path)
-    if norm==True: sc.pp.normalize_total(adata, target_sum=1e4)
-    
+
+def preprocess_adata(adata, use_raw=False, norm=True):
+    """
+    Preprocess the AnnData object by applying `.raw` (if specified) and normalization.
+    """
+    if use_raw:
+        if adata.raw is not None:
+            adata.X = adata.raw.X.copy()
+        else:
+            raise ValueError("`use_raw` is True, but `raw` attribute is not available in AnnData.")
+    if norm:
+        sc.pp.normalize_total(adata, target_sum=1e4)
     return adata
 
+
 def load_feature(feature_path):
-    features = list(np.loadtxt(feature_path, dtype=str))
-    
-    return features
+    """
+    Load the feature list from a file.
+    """
+    return list(np.loadtxt(feature_path, dtype=str))
 
-def scatomic_celltype_annotation(test_h5ad_path, n_thread):
-    tmpdir = os.getcwd()
-    # print(tmpdir)
-    # Define the path to the R script
-    script_dir = os.path.dirname(__file__)
-    r_script = os.path.join(script_dir, 'scAtomic.r')
-    
-    # Call the R script using subprocess
-    result = subprocess.run(
-        ['Rscript', r_script, test_h5ad_path, str(n_thread), tmpdir],
-        capture_output=True,
-        text=True
-    )
-    
-    # Check for errors
-    if result.returncode != 0:
-        raise RuntimeError(f'Error running R script: {result.stderr}')
-    
-    # print(result.stdout)
-
-    celltype_annotation_df = pd.read_csv(f'{tmpdir}/celltype_annotation.scAtomic.csv', index_col=0)
-
-    return celltype_annotation_df
 
 class scMalignantFinder:
-    """scMalignantFinder class
-    
-    scMalignantFinder holds the main modelling functionalities. It's basic usage
-    is based on the typical scikit-learn workflow. That means 
-    1. load data, 
-    2. initialize a model, 
-    3. fit the model and 
-    4. make the actual predictions on unknown data. 
-    In general, annotated data objects are used as data format (AnnData).
-    
-    Parameters
-    -----------
-    test_h5ad_path : str
-        Path of the test data.
-    pretrain_path: str
-        Path of the pretrained model.
-        Default: None
-    train_h5ad_path : str
-        Path of the training data.
-        Default: /mnt/home/qnyu/workspace/scOmics/malignantModel/multi_tissue/data/combine_training.h5ad.
-    celltype_annotation : bool
-        If False, the cell type annotation process will not be performed. If True, use scAtomic for cell type annotation
-        Default: False
-    output_annotation : str
-        Column name of AnnData storing the prediction.
-        Default: Malignant_prediction.
-    model_method : str
-        Core model algorithm. Currently supported: "LogisticRegression, RandomForest, XGBoost".
-        Default: LogisticRegression.
-    feature_path : str
-        Path storing the feature list.
-        Default: /mnt/home/qnyu/workspace/scOmics/malignantModel/multi_tissue/file/deg/combined_tumor_up_down_degs.txt.
-    norm_type: bool
-        If True, Normalize the test data.
-        Default: True
-    n_thread : int
-        Number of multiprocessing threads.
-        Default: 1
-    probability: bool
-        If True, Output the prediction probability for each class.
-        Default: False
-    out_path: str
-        Path storing the prediction probability result.
-        Default: None
     """
-    
+    Main class for scMalignantFinder.
+
+    Parameters:
+    - test_input (str or AnnData): Path to the test data or an AnnData object.
+    - pretrain_path (str): Path to the pretrained model. If None, the model will be trained. Default: None.
+    - train_h5ad_path (str): Path to the training data. Default: "./combine_training.h5ad".
+    - model_method (str): Classification algorithm. Supported: 'LogisticRegression', 'RandomForest', 'XGBoost'.
+                          Default: "LogisticRegression".
+    - feature_path (str): Path to the feature list. Default: "./combined_tumor_up_down_degs.txt".
+    - norm_type (bool): Whether to normalize the test data. Default: True.
+    - n_thread (int): Number of threads for parallel processing. Default: 1.
+    - use_raw (bool): Use `.raw` attribute of AnnData if available. Default: False.
+    """
+
     def __init__(
         self,
-        test_h5ad_path,
+        test_input,
         pretrain_path=None,
         train_h5ad_path="./combine_training.h5ad",
-        celltype_annotation=False,
-        output_annotation="scMalignantFinder_prediction",
         model_method="LogisticRegression",
         feature_path="./combined_tumor_up_down_degs.txt",
         norm_type=True,
         n_thread=1,
-        probability=False,
-        out_path=None
+        use_raw=False,
     ):
-        self.test_h5ad_path = test_h5ad_path
+        self.test_input = test_input
         self.pretrain_path = pretrain_path
         self.train_h5ad_path = train_h5ad_path
-        self.celltype_annotation = celltype_annotation
-        self.output_annotation = output_annotation
         self.model_method = model_method
         self.feature_path = feature_path
         self.norm_type = norm_type
-        self.n_thread = 1
-        self.fitted = False
-        self.probability = probability
-        self.out_path = out_path
-        
-    
-    def fit(self):
-        label_col = 'Raw_annotation'
-        label_dict = {'Normal':0,'Tumor':1}
-        r_label_dict = dict(zip(label_dict.values(), label_dict.keys()))
+        self.n_thread = n_thread
+        self.use_raw = use_raw
 
-        if self.pretrain_path == None:
-            train_adata = data_preprocess(self.train_h5ad_path)
-            features = load_feature(self.feature_path)
-            filter_features = list(set(features) & set(sc.read_h5ad(self.test_h5ad_path).var_names))
-            self.core_model = init_core_model(self.model_method, self.n_thread)
-            if len(filter_features)>0:
-                _ = self.core_model.fit(train_adata[:,filter_features].X, train_adata.obs[label_col].map(label_dict).tolist())
-                self.fitted = True
-            else:
-                print('The number of features is 0. Please check whether the features of the test set are gene symbols.')
-                self.fitted = False
+        self.test_adata = None
+        self.train_adata = None
+        self.features = None
+        self.core_model = None
+        self.fitted = False  # Indicates whether the model is ready for prediction
+        self.pretrain_load = False
+        self.missing_feature = []
 
-            return filter_features
-        
+    def load(self):
+        """
+        Load and preprocess all necessary data.
+        """
+        # Load test data
+        self._load_test_data()
+
+        # If no pretrain_path is provided, load and preprocess training data
+        if not self.pretrain_path:
+            self._load_train_data()
+            self.features = load_feature(self.feature_path)
         else:
-            self.core_model = joblib.load(os.path.join(self.pretrain_path,'model.joblib'))
-            features = load_feature(os.path.join(self.pretrain_path,'ordered_feature.tsv'))
-            filter_features = list(set(features) & set(sc.read_h5ad(self.test_h5ad_path).var_names))
-            if len(filter_features)>0:
-                self.fitted = True
-            else:
-                print('The number of features is 0. Please check whether the features of the test set are gene symbols.')
-                self.fitted = False
+            self._load_pretrained_model()
 
-            return features
-            
-
-    def predict(self, features):
-        label_dict = {'Normal':0,'Tumor':1}
-        r_label_dict = dict(zip(label_dict.values(), label_dict.keys()))
-        
-        if not self.fitted:
-            raise RuntimeError("Model not yet fitted. Please run Model.fit(...) first!")
-        
-        test_adata = data_preprocess(self.test_h5ad_path, norm=self.norm_type)
-        if self.pretrain_path == None:
-            y_pred = self.core_model.predict(test_adata[:,features].X)
+    def _load_test_data(self):
+        """
+        Load and preprocess test data.
+        """
+        if isinstance(self.test_input, str):
+            self.test_adata = sc.read_h5ad(self.test_input)
+        elif isinstance(self.test_input, sc.AnnData):
+            self.test_adata = self.test_input
         else:
-            df = test_adata[:,list(set(features) & set(test_adata.var_names))].to_df()
-            sub_matrix = pd.DataFrame(index=df.index, columns=features)
-            for feature in features:
-                if feature in df.columns:
-                    sub_matrix[feature] = df[feature]
-                else:
-                    sub_matrix[feature] = 0
-            y_pred = self.core_model.predict(csr_matrix(sub_matrix))
-            del df
-            del sub_matrix
+            raise ValueError("`test_input` must be a file path or an AnnData object.")
 
-        pred_df = pd.DataFrame({self.output_annotation: y_pred}, index=test_adata.obs_names)
-        pred_df = pred_df.applymap(lambda x: r_label_dict[x])
-        
-        if self.probability and self.out_path != None:
-            pred_prob_df = pd.DataFrame(self.core_model.predict_proba(test_adata[:,features].X), columns=self.core_model.classes_, index=test_adata.obs_names)
-            pred_prob_df.columns = pred_prob_df.columns.map(lambda x: r_label_dict[x])
-            pred_prob_df.to_csv(self.out_path)
-        
-        if self.celltype_annotation:
-            annotation_df = scatomic_celltype_annotation(self.test_h5ad_path, self.n_thread)
-            test_adata.obs[self.output_annotation] = annotation_df.loc[test_adata.obs_names,'scATOMIC_pred']
-            
-            potential_cancer_prefix = 'Cancer|Normal|Soft Tissue|Brain|Neuroblastoma|Oligodendrocytes|Bile Duct|Bladder|\
-                                       Bone|Brain|Breast|Colon|Colorectal|Endometrial|Uterine|Esophageal|Gallbladder|Gastric|\
-                                       Glial|Kidney|Liver|Lung|Oligodendrocytes|Ovarian|Pancreatic|Prostate|Skin|Sarcoma|Melanoma|Hepatobiliary'
-            potential_tumor_cells = annotation_df[annotation_df['scATOMIC_pred'].str.contains(potential_cancer_prefix)].index.tolist()
-            test_adata.obs.loc[potential_tumor_cells,self.output_annotation] = pred_df.loc[potential_tumor_cells,self.output_annotation]
+        # Apply preprocessing to test data
+        self.test_adata = preprocess_adata(self.test_adata, use_raw=self.use_raw, norm=self.norm_type)
+
+    def _load_train_data(self):
+        """
+        Load and preprocess training data.
+        """
+        self.train_adata = sc.read_h5ad(self.train_h5ad_path)
+        self.train_adata = preprocess_adata(self.train_adata, norm=True)
+
+    def _load_pretrained_model(self):
+        """
+        Load pretrained model and ensure test data compatibility.
+        """
+        import joblib
+
+        # Load pretrained model
+        model_path = os.path.join(self.pretrain_path, "model.joblib")
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"Pretrained model not found at {model_path}.")
+        self.core_model = joblib.load(model_path)
+
+        # Ensure features compatibility with test data
+        ordered_features_path = os.path.join(self.pretrain_path, "ordered_feature.tsv")
+        self.features = load_feature(ordered_features_path)
+
+        # Check for missing features (inform user but don't modify test_adata permanently)
+        missing_features = set(self.features) - set(self.test_adata.var_names)
+        num_missing = len(missing_features)
+        total_features = len(self.features)
+        missing_percentage = (num_missing / total_features) * 100
+
+        print(f"Model features: {total_features}")
+        print(f"Missing features: {num_missing} ({missing_percentage:.2f}%)")
+
+        if missing_percentage > 20:
+            print("Warning: Missing feature percentage is high (>20%). Consider retraining the model.")
+
+        self.fitted = True  # Mark model as ready for prediction
+        self.pretrain_load = True
+        self.missing_feature = list(missing_features)
+
+    def predict(self):
+        """
+        Predict malignancy for the test data.
+
+        If no pretrained model is provided, train the model before prediction.
+        """
+        if not self.features:
+            raise RuntimeError("Features are not loaded. Please run `load()` first!")
+
+        # Train the model if no pretrained model is provided
+        if not self.pretrain_path:
+            self._train_model()
+
+        # Perform predictions only if the model is fitted
+        if self.fitted:
+            return self._make_predictions()
         else:
-            test_adata.obs[self.output_annotation] = pd.Categorical(pred_df[self.output_annotation], 
-                                                                     categories=['Tumor','Normal'])
+            raise RuntimeError("Model is not fitted. Please check the training or loading process.")
 
-        return test_adata
+    def _train_model(self):
+        """
+        Train the model using the training data.
+        """
+        filter_features = list(set(self.features) & set(self.train_adata.var_names) & set(self.test_adata.var_names))
+        if not filter_features:
+            raise RuntimeError("No overlapping features found between test and training sets.")
 
-    
+        num_cells = self.train_adata.shape[0]
+        num_features = len(filter_features)
+        print(f"Training model with {num_cells} cells and {num_features} features using {self.model_method}.")
+
+        self.core_model = init_core_model(self.model_method, self.n_thread)
+        self.core_model.fit(
+            self.train_adata[:, filter_features].X,
+            self.train_adata.obs["Raw_annotation"].map({"Normal": 0, "Malignant": 1, 'Tumor': 1}).tolist(),
+        )
+        self.fitted = True  # Mark model as ready for prediction
+        self.features = filter_features
+
+    def _make_predictions(self):
+        """
+        Perform predictions and add results to the test AnnData object.
+        """
+
+        if len(self.missing_feature)==0:
+            y_pred = self.core_model.predict(np.array(self.test_adata[:,self.features].X.todense()))
+            y_prob = self.core_model.predict_proba(np.array(self.test_adata[:,self.features].X.todense()))[:, 1]
+        else:
+            missing_df = pd.DataFrame(0, index=self.test_adata.obs_names, columns=self.missing_feature)
+            full_matrix = pd.concat([self.test_adata.to_df(), missing_df], axis=1).loc[:,self.features].values
+            y_pred = self.core_model.predict(full_matrix)
+            y_prob = self.core_model.predict_proba(full_matrix)[:, 1]
+
+            del full_matrix, missing_df
+
+        # Add predictions and probabilities to AnnData (without altering its original structure)
+        self.test_adata.obs["scMalignantFinder_prediction"] = pd.Categorical(
+            ["Malignant" if pred else "Normal" for pred in y_pred]
+        )
+        self.test_adata.obs["malignancy_probability"] = y_prob
+
+        return self.test_adata
