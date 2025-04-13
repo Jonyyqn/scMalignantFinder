@@ -107,4 +107,20 @@ Name: malignancy_probability, dtype: float64
 
 # Citation
 
-If you use scMalignantFinder in your research, please cite the corresponding publication.
+If you use scMalignantFinder in your research, please cite:
+
+Qiaoni, Yu, et al. "scMalignantFinder distinguishes malignant cells in single-cell and spatial transcriptomics by leveraging cancer signatures.", *Communications Biology*, 2025.
+DOI: [https://doi.org/10.1038/s42003-025-07942-y](https://doi.org/10.1038/s42003-025-07942-y)
+
+BibTeX:
+```bibtex
+@article{yu2025scmalignantfinder,
+  title={scMalignantFinder distinguishes malignant cells in single-cell and spatial transcriptomics by leveraging cancer signatures},
+  author={Yu, Qiaoni and Li, Yuan-Yuan and Chen, Yunqin},
+  journal={Communications Biology},
+  volume={8},
+  number={1},
+  pages={504},
+  year={2025},
+  publisher={Nature Publishing Group UK London}
+}
