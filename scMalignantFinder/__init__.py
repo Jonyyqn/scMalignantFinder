@@ -1,4 +1,5 @@
-import scMalignantFinder.classifier
+from . import classifier
+from . import spatial 
 import warnings
 import pandas as pd
 import logging

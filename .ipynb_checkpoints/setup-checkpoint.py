@@ -25,12 +25,12 @@ setup(
         'pyscenic==1.12.1',
         'dask[dataframe]==2024.11.2',
         'squidpy==1.3.1',
-        'numpy==1.23.4',
+        'numpy>=1.24,<2',
         'joblib==1.4.2',
         'pandas==2.1.4',
         'matplotlib==3.6.3',
         'scipy==1.13.1',
-        'numba==0.56.4',
+        # 'numba==0.56.4',
         'h5py==3.7.0'
         
     ],
