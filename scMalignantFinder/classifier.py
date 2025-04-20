@@ -57,7 +57,7 @@ class scMalignantFinder:
 
     Parameters:
     - test_input (str or AnnData): Path to the test data or an AnnData object.
-    - pretrain_path (str): Path to the pretrained model. If None, the model will be trained. Default: None.
+    - pretrain_dir (str): Directory containing the pretrained model and ordered feature list. If None, the model will be trained. Default: None.
     - train_h5ad_path (str): Path to the training data. Default: "./combine_training.h5ad".
     - model_method (str): Classification algorithm. Supported: 'LogisticRegression', 'RandomForest', 'XGBoost'.
                           Default: "LogisticRegression".
@@ -74,7 +74,7 @@ class scMalignantFinder:
     def __init__(
         self,
         test_input,
-        pretrain_path=None,
+        pretrain_dir=None,
         train_h5ad_path="./combine_training.h5ad",
         model_method="LogisticRegression",
         feature_path="./combined_tumor_up_down_degs.txt",
@@ -87,7 +87,7 @@ class scMalignantFinder:
 
     ):
         self.test_input = test_input
-        self.pretrain_path = pretrain_path
+        self.pretrain_dir = pretrain_dir
         self.train_h5ad_path = train_h5ad_path
         self.model_method = model_method
         self.feature_path = feature_path
@@ -113,8 +113,8 @@ class scMalignantFinder:
         # Load test data
         self._load_test_data()
 
-        # If no pretrain_path is provided, load and preprocess training data
-        if not self.pretrain_path:
+        # If no pretrain_dir is provided, load and preprocess training data
+        if not self.pretrain_dir:
             self._load_train_data()
             self.features = load_feature(self.feature_path)
         else:
@@ -148,13 +148,13 @@ class scMalignantFinder:
         import joblib
 
         # Load pretrained model
-        model_path = os.path.join(self.pretrain_path, "model.joblib")
+        model_path = os.path.join(self.pretrain_dir, "model.joblib")
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"Pretrained model not found at {model_path}.")
         self.core_model = joblib.load(model_path)
 
         # Ensure features compatibility with test data
-        ordered_features_path = os.path.join(self.pretrain_path, "ordered_feature.tsv")
+        ordered_features_path = os.path.join(self.pretrain_dir, "ordered_feature.tsv")
         self.features = load_feature(ordered_features_path)
 
         # Check for missing features (inform user but don't modify test_adata permanently)
@@ -183,7 +183,7 @@ class scMalignantFinder:
             raise RuntimeError("Features are not loaded. Please run `load()` first!")
 
         # Train the model if no pretrained model is provided
-        if not self.pretrain_path:
+        if not self.pretrain_dir:
             self._train_model()
 
         # Perform predictions only if the model is fitted
