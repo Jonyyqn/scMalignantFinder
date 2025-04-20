@@ -151,9 +151,6 @@ AAACAGAGCGACTCCT-1       2            Normal
 AAACAGGGTCTATATT-1       0            Normal
 AAACAGTGTTCCTGGG-1       1         Malignant
 
-import squidpy as sq
-sq.pl.spatial_scatter(adata, color='region_prediction')
-
 ```
 
 # Citation
