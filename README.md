@@ -127,19 +127,19 @@ adata = spatial.image_cal(adata)
 # Step 3: Integrate multi-modal features to segment malignant regions
 
 adata = spatial.region_identification(
-	adata,
-	# features: A list of feature names from `adata.obs` used for clustering.
+  adata,
+  # features: A list of feature names from `adata.obs` used for clustering.
   # These features are used to compute pairwise distances and perform hierarchical clustering.
-	features=['malignancy_probability', 'Malignant_up', 'image_score'],
-	# nclus: Number of clusters to define from hierarchical clustering (default: 3).
+  features=['malignancy_probability', 'Malignant_up', 'image_score'],
+  # nclus: Number of clusters to define from hierarchical clustering (default: 3).
   # One of the clusters will be identified as "Malignant", the others as "Normal".
-	nclus=3,
-	# define_feature: The key feature used to determine which cluster corresponds to malignant regions.
+  nclus=3,
+  # define_feature: The key feature used to determine which cluster corresponds to malignant regions.
   # The cluster with the highest average value of this feature will be labeled as "Malignant".
-	define_feature='Malignant_up',
-	# spatial_nn: Whether to refine the predicted region labels using spatial neighbor information (default: True).
+  define_feature='Malignant_up',
+  # spatial_nn: Whether to refine the predicted region labels using spatial neighbor information (default: True).
   # If True, each spot's label may be adjusted by majority vote from its spatial neighbors.
-	spatial_nn=True
+  spatial_nn=True
 )
 
 # Example output for scMalignantFinder_prediction:
