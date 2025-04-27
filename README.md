@@ -50,13 +50,19 @@ Optional: scMalignantFinder includes a built-in pan-cancer cell type annotation 
 
 # Data preparation
 
-A pretrained model and a list of ordered features are provided in the model directory. Users can also download or use the training data for training the model. 
+A pretrained model and a list of ordered features are provided in the `model` directory:
+- Pretrained model: `model/model.joblib`
+- Ordered feature list: `model/ordered_feature.tsv`
 
+Users can also download or use the training data for training the model. 
 1. **Training data**: Download the training data used in the original study from [here](http://home.ustc.edu.cn/~jonyyqn/scMalignantFinder_data/combine_training.h5ad), or use your own dataset to train the model.
 2. **Feature file**: The feature list file can be collected from [here](http://home.ustc.edu.cn/~jonyyqn/scMalignantFinder_data/combined_tumor_up_down_degs.txt).
 3. **Example test data**: 
    - Cancer cell line data containing malignant cells can be collected from [here](http://home.ustc.edu.cn/~jonyyqn/scMalignantFinder_data/test_cancerCellLine.h5ad).
    - Healthy tissue data containing normal epithelial cells can be collected from [here](http://home.ustc.edu.cn/~jonyyqn/scMalignantFinder_data/test_TabulaSapiens.h5ad).
+
+In addition, for malignant region identification in spatial transcriptomics data, the malignant cell gene signature file is provided as `model/sc_malignant_deg.gmt`.
+Alternatively, users can supply their own gene signature file, provided it follows the same .gmt format.
 
 # User guidance
 
