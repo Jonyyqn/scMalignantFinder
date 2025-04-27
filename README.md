@@ -87,6 +87,8 @@ model = classifier.scMalignantFinder(
                                           # - Path to tab-delimited .txt/.tsv file
                                           # - Path to comma-delimited .csv file
                                           # (.txt, .tsv, and .csv can also be gzip-compressed as .txt.gz, .tsv.gz, or .csv.gz)
+                                          # For text-based files (.txt, .tsv, .csv), 
+                                          # rows must correspond to gene symbols and columns to cell barcodes.
                                           
     pretrain_dir=None,                    # Directory containing pretrained model and feature list. 
                                           # If None, the model will be trained from scratch. Default: None.
