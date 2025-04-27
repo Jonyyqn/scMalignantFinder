@@ -22,7 +22,7 @@ setup(
         'scanpy==1.9.3',
         'anndata==0.9.1',
         'scikit-learn==1.2.2',
-        'pyscenic==1.12.1',
+        'pyscenic==0.12.1',
         'dask[dataframe]==2024.11.2',
         'squidpy==1.3.1',
         'numpy>=1.24,<2',
