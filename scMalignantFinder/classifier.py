@@ -59,7 +59,7 @@ class scMalignantFinder:
 
     Parameters:
     - test_input (str or AnnData): Test data input. It can be:
-    - a file path to a `.h5ad`, `.txt`, `.tsv`, or `.csv` file, or
+    - a file path to a `.h5ad`, `.txt`, `.txt.gz`, `.tsv`, `.tsv.gz`, `.csv`, `.csv.gz` file, or
     - an `AnnData` object.
     For `.h5ad` files, the dataset is directly loaded as an AnnData object.  
     For `.txt` (tab-separated), `.tsv` (tab-separated), or `.csv` (comma-separated) files, with rows treated as features and columns as cells.
@@ -133,16 +133,16 @@ class scMalignantFinder:
         if isinstance(self.test_input, str):
             if self.test_input.endswith('.h5ad'):
                 self.test_adata = sc.read_h5ad(self.test_input)
-            elif self.test_input.endswith('.txt') or self.test_input.endswith('.tsv'):
+            elif self.test_input.endswith(('.txt', '.txt.gz', '.tsv', '.tsv.gz')):
                 self.test_adata = sc.AnnData(pd.read_csv(self.test_input, sep='\t', index_col=0, 
                                                          low_memory=False, engine='c').T)
                 self.test_adata.X = sparse.csr_matrix(self.test_adata.X)
-            elif self.test_input.endswith('.csv'):
+            elif self.test_input.endswith(('.csv', '.csv.gz')):
                 self.test_adata = sc.AnnData(pd.read_csv(self.test_input, sep=',', index_col=0, 
                                                          low_memory=False, engine='c').T)
                 self.test_adata.X = sparse.csr_matrix(self.test_adata.X)
             else:
-                raise ValueError("`test_input` must be a .h5ad, .txt, .tsv, or .csv file path.")
+                raise ValueError("`test_input` must be a .h5ad, .txt, .tsv, .csv or .gz file path.")
         elif isinstance(self.test_input, sc.AnnData):
             self.test_adata = self.test_input
         else:
