@@ -74,17 +74,21 @@ from scMalignantFinder import classifier
 
 # Initialize model
 model = classifier.scMalignantFinder(
-  # Path to test data or AnnData object
-  test_input="path/to/test_data.h5ad",
-  # Directory containing the pretrained model and ordered feature list. If None, the model will be trained. Default: None.
-  pretrain_dir=None,
-  # Path to training data
-  train_h5ad_path="/path/to/train_data.h5ad",
-  # Path to feature list
-  feature_path="/path/to/features.txt",
-  model_method="LogisticRegression",              
-  norm_type=True,                           
-  n_thread=1
+    test_input="path/to/test_data.h5ad",  # Test data input. Supports:
+                                          # - AnnData object
+                                          # - Path to .h5ad file
+                                          # - Path to tab-delimited .txt/.tsv file
+                                          # - Path to comma-delimited .csv file
+                                          # (.txt, .tsv, and .csv can also be gzip-compressed as .txt.gz, .tsv.gz, or .csv.gz)
+                                          
+    pretrain_dir=None,                    # Directory containing pretrained model and feature list. 
+                                          # If None, the model will be trained from scratch. Default: None.
+                                           
+    train_h5ad_path="/path/to/train_data.h5ad",  # Path to training dataset (.h5ad)
+    feature_path="/path/to/features.txt",        # Path to ordered feature list (.txt)
+    model_method="LogisticRegression",           # Classifier method: LogisticRegression, RandomForest, or XGBoost
+    norm_type=True,                              # Whether to normalize test data. Default: True.
+    n_thread=1                                   # Number of threads for parallel processing
 )
 
 # Load data
@@ -133,19 +137,23 @@ adata = spatial.image_cal(adata)
 # Step 3: Integrate multi-modal features to segment malignant regions
 
 adata = spatial.region_identification(
-  adata,
-  # features: A list of feature names from `adata.obs` used for clustering.
-  # These features are used to compute pairwise distances and perform hierarchical clustering.
-  features=['malignancy_probability', 'Malignant_up', 'image_score'],
-  # nclus: Number of clusters to define from hierarchical clustering (default: 3).
-  # One of the clusters will be identified as "Malignant", the others as "Normal".
-  nclus=3,
-  # define_feature: The key feature used to determine which cluster corresponds to malignant regions.
-  # The cluster with the highest average value of this feature will be labeled as "Malignant".
-  define_feature='Malignant_up',
-  # spatial_nn: Whether to refine the predicted region labels using spatial neighbor information (default: True).
-  # If True, each spot's label may be adjusted by majority vote from its spatial neighbors.
-  spatial_nn=True
+    adata,
+    
+    features=['malignancy_probability', 'Malignant_up', 'image_score'],  
+    # A list of feature names from adata.obs used for clustering.
+    # These features are used to compute pairwise distances and perform hierarchical clustering.
+    
+    nclus=3,  
+    # Number of clusters to define from hierarchical clustering (default: 3).
+    # One of the clusters will be identified as "Malignant", and the others as "Normal".
+    
+    define_feature='Malignant_up',  
+    # The key feature used to determine which cluster corresponds to malignant regions.
+    # The cluster with the highest average value of this feature will be labeled as "Malignant".
+    
+    spatial_nn=True  
+    # Whether to refine region labels using spatial neighbor information (default: True).
+    # If True, each spot's label may be adjusted by majority vote among its spatial neighbors.
 )
 
 # Example output for scMalignantFinder_prediction:
