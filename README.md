@@ -6,6 +6,13 @@
 
 # Latest updates
 
+## **Version 1.1.6 (2025-04-26)**
+
+**Expanded input file format compatibility**
+
+- Extended support for test data input to include `.txt`, `.tsv`, and `.csv` files, as well as their compressed `.gz` versions.
+- Text and CSV files are automatically converted into AnnData objects for downstream analysis.
+
 ## **Version 1.1.5 (2025-04-20)**
 
 **New spatial region identification feature**
