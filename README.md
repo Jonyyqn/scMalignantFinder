@@ -135,11 +135,11 @@ Name: malignancy_probability, dtype: float64
 
 On top of the malignancy probability from Part 1, malignant regions in spatial transcriptomics data can be further identified by integrating gene signatures and image-based features:
 ```python
-from scMalignantFinder import spatial # assuming spatial module provides relevant methods
+from scMalignantFinder import spatial, utils # assuming spatial module provides relevant methods
 
 # Step 1: Calculate AUCell score using scRNA-seq-derived gene sets
 sc_gmt = '/path/to/sc_malignant_deg.gmt'
-adata = spatial.aucell_cal(adata, sc_gmt)
+adata = utils.aucell_cal(adata, sc_gmt)
 
 # Step 2: Extract image-based features from spatial images
 adata = spatial.image_cal(adata)

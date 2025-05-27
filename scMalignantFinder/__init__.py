@@ -1,5 +1,6 @@
 from . import classifier
 from . import spatial 
+from . import utils
 import warnings
 import pandas as pd
 import logging
