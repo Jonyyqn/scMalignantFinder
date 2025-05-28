@@ -26,10 +26,6 @@
 
 - Test data can now be provided as a path to an .h5ad file or directly as an AnnData object.
 
-**Dynamic Feature Handling**
-
-- During pretrained model usage, any missing features in the test dataset are temporarily filled with zeros during prediction to ensure compatibility.
-
 
 ## Version 1.0.0 2024-12-24
 
@@ -140,7 +136,7 @@ On top of the malignancy probability from Part 1, malignant regions in spatial t
 from scMalignantFinder import spatial, utils # assuming spatial module provides relevant methods
 
 # Step 1: Calculate AUCell score using scRNA-seq-derived gene sets
-sc_gmt = '/path/to/sc_malignant_deg.gmt'
+sc_gmt = './model/sc_malignant_deg.gmt'
 adata = utils.aucell_cal(adata, sc_gmt)
 
 # Step 2: Extract image-based features from spatial images
@@ -178,6 +174,35 @@ AAACAGGGTCTATATT-1       0            Normal
 AAACAGTGTTCCTGGG-1       1         Malignant
 
 ```
+
+## Part 3: Analyze cancer cell states using curated gene sets
+
+To support downstream functional interpretation of malignant cells, we collected and curated **67 cancer cell state gene sets** from the pan-cancer study by *Nature* ([DOI: 10.1038/s41586-023-06130-4]). These gene sets represent a wide spectrum of cancer-associated cellular programs (e.g., cell cycle, EMT, immune evasion, hypoxia) across multiple cancer types.
+
+You can quantify the enrichment of these gene sets in individual cells using AUCell scoring:
+
+```python
+from scMalignantFinder import utils
+
+# Path to the pan-cancer curated gene sets
+pan_cancer_gene_sets = "/path/to/model/Malignant_MPs.Gavish_2023.gmt"
+
+# Compute AUCell scores for each gene set
+adata = utils.aucell_cal(adata, pan_cancer_gene_sets, norm_type=False)
+
+# View results
+print(adata.obs.loc[:,adata.obs.columns.str.startswith('MP')].iloc[:5,:3]) 
+                MP1 Cell Cycle - G2/M	MP2 Cell Cycle - G1/S	MP3 Cell Cylce HMG-rich				
+KUL01-T_AAACCT	             0.045819	             0.000000	               0.306887
+KUL01-T_AAACGG	             0.155027	             0.078003	               0.227548
+KUL01-T_AAAGAT	             0.000000	             0.000000	               0.293480
+KUL01-T_AAAGAG	             0.000000	             0.000000	               0.239118
+KUL01-T_AAAGCA	             0.068728	             0.000000	               0.272176
+
+
+```
+
+
 
 # Citation
 
