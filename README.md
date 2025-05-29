@@ -144,7 +144,7 @@ Name: malignancy_probability, dtype: float64
 
 ### Identify malignant regions from spatial transcriptomics
 
-On top of the malignancy probability, malignant regions in spatial transcriptomics data can be further identified by integrating gene signatures and image-based features:
+On top of the malignancy probability from [Identify malignant cells from scRNA-seq data](#identify-malignant-cells-from-scRNA-seq-data), malignant regions in spatial transcriptomics data can be further identified by integrating gene signatures and image-based features:
 ```python
 from scMalignantFinder import spatial, utils # assuming spatial module provides relevant methods
 
