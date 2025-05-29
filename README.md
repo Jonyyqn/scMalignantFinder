@@ -4,48 +4,47 @@
 
 ![workflow](docs/workflow.png)
 
-# Latest updates
-## **Version 1.1.7 (2025-05-27)**
-- Enhanced downstream analysis capabilities with a new module for cancer cell state analysis
-
-## **Version 1.1.6 (2025-04-26)**
-
-**Expanded input file format compatibility**
-
-- Extended support for test data input to include `.txt`, `.tsv`, and `.csv` files, as well as their compressed `.gz` versions.
-
-## **Version 1.1.5 (2025-04-20)**
-
-**New spatial region identification feature**
-
-- Add the ability to identify malignant regions from spatial transcriptomics data by applying a clustering-based method.
-
-## **Version 1.0.5 (2025-01-11)**
-
-**Enhanced Flexibility for Test Input**
-
-- Test data can now be provided as a path to an .h5ad file or directly as an AnnData object.
-
-
-## Version 1.0.0 2024-12-24
-
-**New features**
-
-- Introduced malignancy probability output
-
-
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
+- [Latest updates](#latest-updates)
 - [Installation](#installation)
 - [Data preparation](#data-preparation)
 - [User guidance](#user-guidance)
   - [Identify malignant cells from scRNA-seq data](#identify-malignant-cells-from-scRNA-seq-data)
   - [Identify malignant regions from spatial transcriptomics](#identify-malignant-regions-from-spatial-transcriptomics)
   - [Analyze cancer cell states using curated gene sets](#Analyze-cancer-cell-states-using-curated-gene-sets)
-  - 
+  
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## Latest updates
+### **Version 1.1.7 (2025-05-27)**
+- Enhanced downstream analysis capabilities with a new module for cancer cell state analysis
+
+### **Version 1.1.6 (2025-04-26)**
+
+**Expanded input file format compatibility**
+
+- Extended support for test data input to include `.txt`, `.tsv`, and `.csv` files, as well as their compressed `.gz` versions.
+
+### **Version 1.1.5 (2025-04-20)**
+
+**New spatial region identification feature**
+
+- Add the ability to identify malignant regions from spatial transcriptomics data by applying a clustering-based method.
+
+### **Version 1.0.5 (2025-01-11)**
+
+**Enhanced Flexibility for Test Input**
+
+- Test data can now be provided as a path to an .h5ad file or directly as an AnnData object.
+
+### Version 1.0.0 2024-12-24
+
+**New features**
+
+- Introduced malignancy probability output
 
 ## Installation
 
