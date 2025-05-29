@@ -33,7 +33,21 @@
 
 - Introduced malignancy probability output
 
-# Installation
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Installation](#installation)
+- [Data preparation](#data-preparation)
+- [User guidance](#user-guidance)
+  - [Identify malignant cells from scRNA-seq data](#identify-malignant-cells-from-scRNA-seq-data)
+  - [Identify malignant regions from spatial transcriptomics](#identify-malignant-regions-from-spatial-transcriptomics)
+  - [Analyze cancer cell states using curated gene sets](#Analyze-cancer-cell-states-using-curated-gene-sets)
+  - 
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## Installation
 
 We recommend using a conda environment to install scMalignantFinder.
 
@@ -52,7 +66,7 @@ pip install scMalignantFinder
 
 Optional: scMalignantFinder includes a built-in pan-cancer cell type annotation tool, scATOMIC. If you want to perform basic cell type annotation before identifying malignant cells, follow the [scATOMIC official tutorial](https://github.com/abelson-lab/scATOMIC) to complete its installation in the same conda environment.
 
-# Data preparation
+## Data preparation
 
 A pretrained model and a list of ordered features are provided in the `model` directory:
 - Pretrained model: `model/model.joblib`
@@ -68,9 +82,9 @@ Users can also download or use the training data for training the model.
 In addition, for malignant region identification in spatial transcriptomics data, the malignant cell gene signature file is provided as `model/sc_malignant_deg.gmt`.
 Alternatively, users can supply their own gene signature file, provided it follows the same .gmt format.
 
-# User guidance
+## User guidance
 
-## Part 1: Identify malignant cells from scRNA-seq data
+### Identify malignant cells from scRNA-seq data
 
 ```python
 ### Load package
@@ -129,9 +143,9 @@ KUL01-T_AAAGCAAGTAAACACA     0.6598
 Name: malignancy_probability, dtype: float64
 ```
 
-## Part 2: Identify malignant regions from spatial transcriptomics
+### Identify malignant regions from spatial transcriptomics
 
-On top of the malignancy probability from Part 1, malignant regions in spatial transcriptomics data can be further identified by integrating gene signatures and image-based features:
+On top of the malignancy probability, malignant regions in spatial transcriptomics data can be further identified by integrating gene signatures and image-based features:
 ```python
 from scMalignantFinder import spatial, utils # assuming spatial module provides relevant methods
 
@@ -175,7 +189,7 @@ AAACAGTGTTCCTGGG-1       1         Malignant
 
 ```
 
-## Part 3: Analyze cancer cell states using curated gene sets
+### Analyze cancer cell states using curated gene sets
 
 To support downstream functional interpretation of malignant cells, we collected and curated **67 cancer cell state gene sets** from [a pan-cancer study](https://doi.org/10.1038/s41586-023-06130-4). These gene sets represent a wide spectrum of cancer-associated cellular programs (e.g., cell cycle, EMT, immune evasion, hypoxia) across multiple cancer types.
 
