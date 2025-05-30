@@ -1,5 +1,5 @@
 [![PyPI](https://img.shields.io/pypi/v/scMalignantFinder)](https://pypi.org/project/scMalignantFinder)
-[![PyPI Downloads](https://img.shields.io/pepy/dt/scanpy?logo=pypi)](https://pepy.tech/project/scMalignantFinder)
+[![PyPI Downloads](https://img.shields.io/pepy/dt/scMalignantFinder?logo=pypi)](https://pepy.tech/project/scMalignantFinder)
 
 # scMalignantFinder: Distinguishing Malignant Cells in Single-Cell and Spatial Transcriptomics by Leveraging Cancer Signatures
 
