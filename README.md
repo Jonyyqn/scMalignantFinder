@@ -46,7 +46,7 @@
 
 - Test data can now be provided as a path to an .h5ad file or directly as an AnnData object.
 
-### Version 1.0.0 2024-12-24
+### Version 1.0.0 (2024-12-24)
 
 **New features**
 
