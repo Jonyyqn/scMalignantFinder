@@ -1,3 +1,6 @@
+[![PyPI](https://img.shields.io/pypi/v/scMalignantFinder)](https://pypi.org/project/scMalignantFinder)
+[![PyPI Downloads](https://img.shields.io/pepy/dt/scanpy?logo=pypi)](https://pepy.tech/project/scMalignantFinder)
+
 # scMalignantFinder: Distinguishing Malignant Cells in Single-Cell and Spatial Transcriptomics by Leveraging Cancer Signatures
 
 **scMalignantFinder** is a Python package designed for analyzing cancer single-cell RNA-seq and spatial transcriptomics datasets to distinguish malignant cells from their normal counterparts. Trained on over 400,000 high-quality single-cell transcriptomes, scMalignantFinder uses curated pan-cancer gene signatures for training set calibration and selects features by taking the union of differentially expressed genes across each dataset.
