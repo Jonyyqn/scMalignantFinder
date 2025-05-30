@@ -1,5 +1,6 @@
 [![PyPI](https://img.shields.io/pypi/v/scMalignantFinder)](https://pypi.org/project/scMalignantFinder)
 [![PyPI Downloads](https://img.shields.io/pepy/dt/scMalignantFinder?logo=pypi)](https://pepy.tech/project/scMalignantFinder)
+[![Stars](https://img.shields.io/github/stars/Jonyyqn/scMalignantFinder?style=flat&logo=GitHub&color=blue)](https://github.com/Jonyyqn/scMalignantFinder/stargazers)
 
 # scMalignantFinder: Distinguishing Malignant Cells in Single-Cell and Spatial Transcriptomics by Leveraging Cancer Signatures
 
@@ -220,8 +221,6 @@ KUL01-T_AAAGCA	             0.068728	             0.000000	               0.2721
 
 ```
 
-
-
 # Citation
 
 If you use scMalignantFinder in your research, please cite:
@@ -241,3 +240,5 @@ BibTeX:
   year={2025},
   publisher={Nature Publishing Group UK London}
 }
+
+
