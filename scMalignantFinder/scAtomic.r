@@ -1,4 +1,7 @@
 args <- commandArgs(trailingOnly = TRUE)
+
+# .libPaths('/path/to/r/library')
+
 library(scATOMIC)
 library(plyr)
 library(dplyr)
