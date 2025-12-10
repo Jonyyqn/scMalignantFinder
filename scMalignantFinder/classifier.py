@@ -235,8 +235,10 @@ class scMalignantFinder:
         """
 
         if len(self.missing_feature)==0:
-            y_pred = self.core_model.predict(np.array(self.test_adata[:,self.features].X.todense()))
-            y_prob = self.core_model.predict_proba(np.array(self.test_adata[:,self.features].X.todense()))[:, 1]
+            feature_adata = self.test_adata[:, self.features]
+            X = feature_adata.X.toarray() if hasattr(feature_adata.X, "toarray") else np.asarray(feature_adata.X)
+            y_pred = self.core_model.predict(X)
+            y_prob = self.core_model.predict_proba(X)[:, 1]
         else:
             missing_df = pd.DataFrame(0, index=self.test_adata.obs_names, columns=self.missing_feature)
             full_matrix = pd.concat([self.test_adata.to_df(), missing_df], axis=1).loc[:,self.features].values
