@@ -198,7 +198,7 @@ AAACAGTGTTCCTGGG-1       1         Malignant
 
 ### Analyze cancer cell states using curated gene sets
 
-To support downstream functional interpretation of malignant cells, we collected and curated **[67 cancer cell state gene sets](https://zenodo.org/records/17888140/files/sc_malignant_deg.gmt)** from [a pan-cancer study](https://doi.org/10.1038/s41586-023-06130-4). These gene sets represent a wide spectrum of cancer-associated cellular programs (e.g., cell cycle, EMT, immune evasion, hypoxia) across multiple cancer types.
+To support downstream functional interpretation of malignant cells, we collected and curated **[67 cancer cell state gene sets](https://zenodo.org/records/17888140/files/Malignant_MPs.Gavish_2023.gmt)** from [a pan-cancer study](https://doi.org/10.1038/s41586-023-06130-4). These gene sets represent a wide spectrum of cancer-associated cellular programs (e.g., cell cycle, EMT, immune evasion, hypoxia) across multiple cancer types.
 
 You can quantify the enrichment of these gene sets in individual cells using AUCell scoring:
 
@@ -242,6 +242,7 @@ BibTeX:
   year={2025},
   publisher={Nature Publishing Group UK London}
 }
+
 
 
 
