@@ -73,18 +73,20 @@ Optional: scMalignantFinder includes a built-in pan-cancer cell type annotation 
 
 ## Data preparation
 
-A pretrained model and a list of ordered features are provided in the `model` directory:
-- Pretrained model: `model/model.joblib`
-- Ordered feature list: `model/ordered_feature.tsv`
+All required resources for scMalignantFinder — including the training data, example test datasets, feature files, and the pretrained model — have been fully uploaded to [Zenodo](https://zenodo.org/records/17888140) for stable long-term access.
+
+A pretrained model and a list of ordered features:
+- Pretrained model: [model.joblib](https://zenodo.org/records/17888140/files/model.joblib)
+- Ordered feature list: [ordered_feature.tsv](https://zenodo.org/records/17888140/files/ordered_feature.tsv)
 
 Users can also download or use the training data for training the model. 
-1. **Training data**: Download the training data used in the original study from [here](http://home.ustc.edu.cn/~jonyyqn/scMalignantFinder_data/combine_training.h5ad), or use your own dataset to train the model.
-2. **Feature file**: The feature list file can be collected from `model/combined_tumor_up_down_degs.txt`
+1. **Training data**: Download the training data used in the original study from [here](https://zenodo.org/records/17888140/files/combine_training.h5ad), or use your own dataset to train the model.
+2. **Feature file**: The feature list file can be collected from [here](https://zenodo.org/records/17888140/files/combined_tumor_up_down_degs.txt)
 3. **Example test data**: 
-   - Cancer cell line data containing malignant cells can be collected from [here](http://home.ustc.edu.cn/~jonyyqn/scMalignantFinder_data/test_cancerCellLine.h5ad).
-   - Healthy tissue data containing normal epithelial cells can be collected from [here](http://home.ustc.edu.cn/~jonyyqn/scMalignantFinder_data/test_TabulaSapiens.h5ad).
+   - Cancer cell line data containing malignant cells can be collected from [here](https://zenodo.org/records/17888140/files/test_cancerCellLine.h5ad).
+   - Healthy tissue data containing normal epithelial cells can be collected from [here](https://zenodo.org/records/17888140/files/test_TabulaSapiens.h5ad).
 
-In addition, for malignant region identification in spatial transcriptomics data, the malignant cell gene signature file is provided as `model/sc_malignant_deg.gmt`.
+In addition, for malignant region identification in spatial transcriptomics data, the malignant cell gene signature file is provided as [here](https://zenodo.org/records/17888140/files/sc_malignant_deg.gmt).
 Alternatively, users can supply their own gene signature file, provided it follows the same .gmt format.
 
 ## User guidance
@@ -196,7 +198,7 @@ AAACAGTGTTCCTGGG-1       1         Malignant
 
 ### Analyze cancer cell states using curated gene sets
 
-To support downstream functional interpretation of malignant cells, we collected and curated **67 cancer cell state gene sets** from [a pan-cancer study](https://doi.org/10.1038/s41586-023-06130-4). These gene sets represent a wide spectrum of cancer-associated cellular programs (e.g., cell cycle, EMT, immune evasion, hypoxia) across multiple cancer types.
+To support downstream functional interpretation of malignant cells, we collected and curated **[67 cancer cell state gene sets](https://zenodo.org/records/17888140/files/sc_malignant_deg.gmt)** from [a pan-cancer study](https://doi.org/10.1038/s41586-023-06130-4). These gene sets represent a wide spectrum of cancer-associated cellular programs (e.g., cell cycle, EMT, immune evasion, hypoxia) across multiple cancer types.
 
 You can quantify the enrichment of these gene sets in individual cells using AUCell scoring:
 
@@ -240,6 +242,7 @@ BibTeX:
   year={2025},
   publisher={Nature Publishing Group UK London}
 }
+
 
 
 
