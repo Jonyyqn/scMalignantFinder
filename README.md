@@ -109,11 +109,12 @@ model = classifier.scMalignantFinder(
                                           # rows must correspond to gene symbols
                                           # and columns to cell barcodes.
                                           
-    pretrain_dir=None,                    # Directory containing pretrained model (model.joblib) and ordered feature list (ordered_feature.tsv). 
+    pretrain_dir=None,                    # Directory containing pretrained model (model.joblib) and
+                                          # ordered feature list (ordered_feature.tsv). 
                                           # If None, the model will be trained from scratch. Default: None.
                                            
     train_h5ad_path="/path/to/train_data.h5ad",  # Path to training dataset (.h5ad)
-    feature_path="/path/to/combined_tumor_up_down_degs.txt",        # Path to feature list. Default: "./combined_tumor_up_down_degs.txt"
+    feature_path="/path/to/combined_tumor_up_down_degs.txt",        # Path to feature list.
     model_method="LogisticRegression",           # Classifier method: LogisticRegression, RandomForest, or XGBoost
     norm_type=True,                              # Whether to normalize test data. Default: True.
     n_thread=1                                   # Number of threads for parallel processing
@@ -241,6 +242,7 @@ BibTeX:
   year={2025},
   publisher={Nature Publishing Group UK London}
 }
+
 
 
 
