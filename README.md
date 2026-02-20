@@ -55,6 +55,7 @@
 
 We recommend using a conda environment to install scMalignantFinder.
 
+**Option A. Create the environment manually and install from PyPI (recommended)**
 1. Create and activate a conda environment
 
 ```bash
@@ -66,6 +67,14 @@ conda activate scmalignant
 
 ```bash
 pip install scMalignantFinder
+```
+
+**Option B. Install with environment.yml**
+
+If you prefer, you can also create the conda environment directly from the provided environment.yml:
+```bash
+conda env create -f environment.yml
+conda activate scmalignant
 ```
 
 Optional: scMalignantFinder includes a built-in pan-cancer cell type annotation tool, scATOMIC. If you want to perform basic cell type annotation before identifying malignant cells, follow the [scATOMIC official tutorial](https://github.com/abelson-lab/scATOMIC) to complete its installation in the same conda environment.
@@ -243,6 +252,7 @@ BibTeX:
   year={2025},
   publisher={Nature Publishing Group UK London}
 }
+
 
 
 
