@@ -171,4 +171,3 @@ dependencies:
       - zarr==2.18.3
       - zict==3.0.0
       - zipp==3.23.0
-prefix: /public/qukungroup/yangchen1107/miniconda3/envs/scmalignant
