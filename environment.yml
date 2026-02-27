@@ -136,7 +136,7 @@ dependencies:
       - scikit-image==0.20.0
       - scikit-learn==1.2.2
       - scipy==1.13.1
-      - scmalignantfinder==1.1.8
+      - scmalignantfinder
       - seaborn==0.13.2
       - session-info==1.0.1
       - shapely==2.1.2
