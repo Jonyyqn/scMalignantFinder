@@ -24,7 +24,7 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Latest updates
-### **Version 1.1.7 (2025-05-27)**
+### **Version 1.1.9 (2025-05-27)**
 - Enhanced downstream analysis capabilities with a new module for cancer cell state analysis
 
 ### **Version 1.1.6 (2025-04-26)**
@@ -252,3 +252,4 @@ BibTeX:
   year={2025},
   publisher={Nature Publishing Group UK London}
 }
+
