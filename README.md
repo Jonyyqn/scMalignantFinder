@@ -190,7 +190,7 @@ Supported labels are:
 - `"Malignant"`
 - `"Tumor"`
 
-`"Tumor"` will be treated as malignant.
+`"Tumor"` and `"Malignant"` will be treated as malignant.
 
 #### Parameter notes
 
