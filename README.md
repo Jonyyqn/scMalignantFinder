@@ -21,6 +21,7 @@
   - [Identify malignant regions from spatial transcriptomics](#identify-malignant-regions-from-spatial-transcriptomics)
   - [Analyze cancer cell states using curated gene sets](#Analyze-cancer-cell-states-using-curated-gene-sets)
   
+
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Latest updates
@@ -101,62 +102,138 @@ Alternatively, users can supply their own gene signature file, provided it follo
 
 ### Identify malignant cells from scRNA-seq data
 
+`scMalignantFinder` supports two usage modes:
+
+1. **Use a pretrained model** (**recommended for most users**)
+2. **Train a model from scratch**
+
+For most users, the pretrained model is the simplest option.
+
+#### Input requirements
+
+`test_input` can be:
+
+- an `AnnData` object
+- a path to a `.h5ad` file
+- a path to a tab-delimited `.txt` or `.tsv` file
+- a path to a comma-delimited `.csv` file
+- gzipped versions of the above text files (`.txt.gz`, `.tsv.gz`, `.csv.gz`)
+
+For text-based files:
+
+- **rows** must correspond to **gene symbols**
+- **columns** must correspond to **cell barcodes**
+
+#### Option 1: Use a pretrained model (recommended)
+
+Prepare a directory containing:
+
+- `model.joblib`
+- `ordered_feature.tsv`
+
+For example:
+
+```text
+pretrained_model/
+├── model.joblib
+└── ordered_feature.tsv
+```
+
+Then run:
+
 ```python
-### Load package
 from scMalignantFinder import classifier
 
-# Initialize model
 model = classifier.scMalignantFinder(
-    test_input="path/to/test_data.h5ad",  # Test data input. Supports:
-                                          # - AnnData object
-                                          # - Path to .h5ad file
-                                          # - Path to tab-delimited .txt/.tsv file
-                                          # - Path to comma-delimited .csv file
-                                          # (.txt, .tsv, and .csv can also be gzip-compressed as
-                                          # .txt.gz, .tsv.gz, or .csv.gz)
-                                          # For text-based files (.txt, .tsv, .csv), 
-                                          # rows must correspond to gene symbols
-                                          # and columns to cell barcodes.
-                                          
-    pretrain_dir=None,    # Directory containing pretrained model (model.joblib) and
-                          # ordered feature list (ordered_feature.tsv). 
-                          # If None, the model will be trained from scratch. Default: None.
-                                           
-    train_h5ad_path="/path/to/train_data.h5ad",  # Path to training dataset (.h5ad)
-    feature_path="/path/to/combined_tumor_up_down_degs.txt",        # Path to feature list.
-    model_method="LogisticRegression",           # Classifier method:
-                                                 # LogisticRegression, RandomForest, or XGBoost.
-    norm_type=True,                              # Whether to normalize test data. Default: True.
-    n_thread=1                                   # Number of threads for parallel processing
+    test_input="path/to/test_data.h5ad",
+    pretrain_dir="path/to/pretrained_model",
+    norm_type=True,
+    n_thread=1
 )
 
-# Load data
 model.load()
-
-# Predict malignancy
 result_adata = model.predict()
+```
 
-# View results
+> [!NOTE]
+> If `pretrain_dir` is provided, the pretrained model and feature list will be loaded automatically. In this case, `train_h5ad_path` and `feature_path` are not required.
+
+#### Option 2: Train a model from scratch
+
+Use this mode only if you want to train your own classifier.
+
+```python
+from scMalignantFinder import classifier
+
+model = classifier.scMalignantFinder(
+    test_input="path/to/test_data.h5ad",
+    train_h5ad_path="path/to/train_data.h5ad",
+    feature_path="path/to/combined_tumor_up_down_degs.txt",
+    model_method="LogisticRegression",
+    norm_type=True,
+    n_thread=1
+)
+
+model.load()
+result_adata = model.predict()
+```
+
+If training from scratch, the training `.h5ad` file must contain labels in:
+
+```python
+adata.obs["Raw_annotation"]
+```
+
+Supported labels are:
+
+- `"Normal"`
+- `"Malignant"`
+- `"Tumor"`
+
+`"Tumor"` will be treated as malignant.
+
+#### Parameter notes
+
+- `pretrain_dir`: directory containing `model.joblib` and `ordered_feature.tsv`
+- `train_h5ad_path`: required only when training from scratch
+- `feature_path`: required only when training from scratch
+- `model_method`: supported options are `"LogisticRegression"`, `"RandomForest"`, and `"XGBoost"`
+- `norm_type=True`: applies `sc.pp.normalize_total(adata, target_sum=1e4)` to the input data
+- `norm_type=False`: skips normalization
+
+> [!IMPORTANT]
+> `scMalignantFinder` does **not** perform log-transformation internally. If your input data has already been normalized, set `norm_type=False`.
+
+#### View results
+
+```python
 print(result_adata.obs["scMalignantFinder_prediction"].head())
+```
 
-## Example output for scMalignantFinder_prediction:
-Index
-KUL01-T_AAACCTGGTCTTTCAT     Malignant
-KUL01-T_AAACGGGTCGGTTAAC     Malignant
-KUL01-T_AAAGATGGTATAGGGC     Normal
-KUL01-T_AAAGATGGTGGCCCTA     Malignant
-KUL01-T_AAAGCAAGTAAACACA     Malignant
+Example output:
+
+```text
+KUL01-T_AAACCTGGTCTTTCAT    Malignant
+KUL01-T_AAACGGGTCGGTTAAC    Malignant
+KUL01-T_AAAGATGGTATAGGGC    Normal
+KUL01-T_AAAGATGGTGGCCCTA    Malignant
+KUL01-T_AAAGCAAGTAAACACA    Malignant
 Name: scMalignantFinder_prediction, dtype: category
 Categories (2, object): ['Normal', 'Malignant']
+```
 
+```python
 print(result_adata.obs["malignancy_probability"].head())
-## Example output for malignancy_probability:
-Index
-KUL01-T_AAACCTGGTCTTTCAT     0.98578
-KUL01-T_AAACGGGTCGGTTAAC     0.78968
-KUL01-T_AAAGATGGTATAGGGC     0.243564
-KUL01-T_AAAGATGGTGGCCCTA     0.8796
-KUL01-T_AAAGCAAGTAAACACA     0.6598
+```
+
+Example output:
+
+```text
+KUL01-T_AAACCTGGTCTTTCAT    0.985780
+KUL01-T_AAACGGGTCGGTTAAC    0.789680
+KUL01-T_AAAGATGGTATAGGGC    0.243564
+KUL01-T_AAAGATGGTGGCCCTA    0.879600
+KUL01-T_AAAGCAAGTAAACACA    0.659800
 Name: malignancy_probability, dtype: float64
 ```
 
