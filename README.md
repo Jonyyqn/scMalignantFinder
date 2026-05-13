@@ -26,7 +26,7 @@
 
 ## Latest updates
 
-### Version 1.1.9 (2025-05-27)
+### Version 1.2.0 (2025-05-27)
 - Added a new module for downstream cancer cell state analysis.
 
 ### Version 1.1.6 (2025-04-26)
